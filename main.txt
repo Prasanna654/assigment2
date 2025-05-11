@@ -61,5 +61,7 @@ spec:
       nodePort: 30008
   selector:
     app: nginx
+kubectl apply –f service.yaml
+kubectl get svc
 
 
