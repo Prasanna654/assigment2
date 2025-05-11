@@ -48,4 +48,18 @@ spec:
 kubectl apply –f deployment.yaml
 kubectl get deploy
 kubectl get pods
+sudo service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-deployment
+spec:
+  type: NodePort
+  ports:
+    - port: 80
+      targetPort: 80
+      nodePort: 30008
+  selector:
+    app: nginx
+
 
