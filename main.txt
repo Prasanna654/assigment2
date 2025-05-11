@@ -1,1 +1,51 @@
+sudo apt-get update
+nano install.sh
+sudo apt-get update
+sudo apt-get install docker.io -y
+sudo systemctl enable --now docker
+sudo swapoff -a
+sudo apt-get install -y apt-transport-https ca-certificates curl gpg
+sudo mkdir -p -m 755 /etc/apt/keyrings
+curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.28/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.28/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
+sudo apt-get update
+sudo apt-get install -y kubelet kubeadm kubectl
+sudo systemctl enable --now kubelet
+bash install.sh
+sudo kubeadm init
+mkdir -p $HOME/.kube
+sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+sudo chown $(id -u):$(id -g) $HOME/.kube/config
+kubeadm join 172.31.10.143:6443 - token julbp8.6qlh2ha13nkb30lg \
+ - discovery-token-ca-cert-hash sha256:661b9935ffce1ab2f9bac23ac58acec8a746262b3ef321d571734b73496217b4
+curl https://raw.githubusercontent.com/projectcalico/calico/v3.27.2/manifests/calico.yaml -O
+ls
+sudo swapoff –a
+kubectl apply -f calico.yaml
+kubectl get nodes
+sudo nano deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  labels:
+    app: nginx
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.16.1
+        ports:
+        - containerPort: 80
+kubectl apply –f deployment.yaml
+kubectl get deploy
+kubectl get pods
 
